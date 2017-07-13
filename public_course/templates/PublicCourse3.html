@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}2016-2017学年第二学期公共选修课 {% endblock %}
+
+{% block styles %}
+<link href="{{url_for('static',filename='css/public_course.css')}}" rel="stylesheet" type="text/css" />
+{% endblock%}
+
+{% block content %}
+	<body class="body">
+
+		<div class="rightColorBox hot">
+			<h1 class="cno"></h1>
+			<h2 class="cname"><br>请选择圆形查看</h2>
+		</div>
+
+		<div class="right" id = "rightBox">
+			<!-- 学分,学时, 课容量 -->
+			<h3 id="cca" class = "cca">· 将鼠标悬停在圆上</h3>
+			<!-- 开课对象 -->
+			<h3 id="cstu"></h3>
+			<!-- 上课时间1 -->
+			<h3 id="t1"></h3>
+			<!-- 上课时间2 -->
+			<h3 id="t2"></h3>
+			<!-- 主讲教师 -->
+			<h1 id="tchr">圆形</h1>
+			<!-- 所在院系 -->
+			<h2 id="fac">一个圆形代表一门课</h2>
+			<!-- 教师简介 -->
+			<p id="tin">圆的大小表示其学分高低，学分范围[1,1.5,2,3]</p>
+			<!-- 课程简介 -->
+			<h1 id="ctin">字母</h1>
+			<!-- 课程简介 -->
+			<p id="cin">A 艺术类<br>H 人文社会科学类<br>E 经济与管理类<br>S 科学技术类<br>J 新闻传播类<br>P 健康教育与体育类<br>L 外语类。<br>注：NA，NH，NE，NS也归入上述类中。</p>
+		</div>
+
+		<div class="left" name="leftBox">
+		</div>
+
+		<svg id="wcSvg" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>
+{% endblock %}
+
+{% block scripts%}
+		<script src="{{url_for('static',filename='js/d3.v3.min.js')}}" charset="utf-8"></script>
+   		<script src="{{url_for('static',filename='js/liquidFillGauge.js')}}" language="JavaScript"></script>
+		<!--liquidFillGauge.js?123456 会404-->
+        <!-- 滚动条兼容非webkit浏览器 ，然而并没有调试好-->
+		<!-- http://www.webhek.com/post/scrollbar.html -->
+		
+		<script>
+			for(var i = 1; i<=7 ; i++){
+				//add day boxes
+				var days = ["Mon ···","Tue ···","Wed ···","Thr ···","Fri ···","Sat ···","Sun ···"];
+				d3.select(".left").append("text").style("color","#808080").style("font-size","60px").style("margin-left","-4px").text(days[i-1]);
+				d3.select(".left").append("div").attr("class","dayBox").attr("id","day"+i);
+			}
+			for(var i = 6; i<=7 ; i++){
+				//add class boxes for weekends
+				var texts = ["1-4","5-8","9-10","9-11","9-12"];
+				for(var j = 1; j<=5 ; j++){
+					//5 class times
+					d3.select("#day"+i).append("div").attr("class","classBox").attr("id","class"+j).append("p").text("第"+ texts[j-1] + "节").style("text-align","center");
+				}
+				d3.select("#day"+i).append("div").attr("style","clear:both");
+			}
+			//GlobalVars
+			var quantileR = d3.scale.quantile().domain([1,1.5,2,3]).range([15,23,32,39]);
+			var color = d3.scale.category10();
+			var quantizeT = d3.scale.quantize().domain([4,8,10,11,12]).range(["class1","class2","class3","class4","class5"]);
+			var quantileF = d3.scale.quantile().domain([15,23,32,40]).range([23,35,40,65]);//圆半径和字体大小刻度对应
+			var center = 41;
+			var datamap;
+			//GlobalVars
+			function onClick(data, color){
+				var colorBri = color.brighter(0.6);
+				var colorDar = color.darker(3);
+				var color = color.darker(0);
+				var cno = data.Cno;
+				var dtmap = datamap.get(cno);
+				d3.select(".cno").text(cno).style("color",colorDar);
+				d3.select("#rightBox").transition().style("border-top-color",colorBri);
+				d3.select(".rightColorBox").transition()
+					  .style("background-color",color);
+				d3.select(".cname").transition().text(data.Cname).style("color",colorDar).style("font-size",((data.Cname.length<15)?"27px":((data.Cname.length<16)?"23px":"19px")));
+				d3.select("#cca").transition().text("学分" + data.Ccredit + "\t·\t学时" + data.Chour + "\t·\t课容量" + data.Cca).style("color",colorBri);
+				d3.select("#cstu").text(dtmap.Cstudent);
+				d3.select("#t1").text(data.Cweek+":"+"星期"+data.Cday + " " + data.Ctime);
+				d3.select("#t2").text(data.Cweek_2+":"+"星期"+data.Cday_2 + " " + data.Ctime_2);
+				d3.select("#tchr").text(dtmap.Cteacher);
+				d3.select("#fac").text(dtmap.Cfaculty).style("color",colorBri);
+				d3.select("#tin").text(dtmap.Ctinfo);
+				d3.select("#cin").text(dtmap.Cinfo);
+				d3.select("#ctin").text("课程简介");
+			}
+			function drawCircle(data,temp){
+
+				var letter = data.Cno.charAt(2);
+				if(letter=='N')//99NA0001
+					letter = data.Cno.charAt(3);
+				var r = quantileR(parseFloat(data.Ccredit));
+				var color2Change = d3.rgb(color(letter));
+
+	// [进度条配置文档]（https://gist.github.com/brattonc/5e5ce9beee483220e2f6）
+				var config1 = liquidFillGaugeDefaultSettings();
+			    config1.circleColor = color2Change.brighter(1);
+			    config1.textColor = color2Change.brighter(0.6);
+			    config1.waveTextColor = color2Change.brighter(0.8);
+			    config1.waveColor = color2Change.brighter(3);
+			    config1.circleThickness = 0.2;
+			    config1.waveAnimateTime = 1000;
+			    var gauge1= loadLiquidFillGauge(temp[0][0].id, Math.floor(500*Math.random()), config1,r);  
+			    var svg=d3.select("#"+temp[0][0].id)
+			    	.datum(data)
+			    	.on("mouseover",function(d){
+					onClick(d,color2Change);
+					});
+
+				return temp;
+			}
+			function drawWeekdays(data,day){
+				var r = quantileR(parseFloat(data.Ccredit));
+				var temp = d3.select("#day"+ day).append("svg").attr("class","svgs").attr("id","course"+data.Cno).attr("height",r).attr("width",r);
+				return drawCircle(data,temp);
+			}
+			function drawMulti(data,day,time1,time2){
+				var r = quantileR(parseFloat(data.Ccredit));
+				var clrid=parseInt(Math.random()*100);//!!!
+				var colorPair = d3.scale.category20();
+				// console.log(clrid+"\t"+ colorPair(clrid));
+				var temp = d3.select("#day"+ day).select("#" + quantizeT(time1)).append("svg").attr("class","svgs").attr("id","course"+data.Cno).attr("height",r).attr("width",r);
+				// drawCircle(data,temp).attr("stroke-dasharray","5 10");
+				temp = d3.select("#day"+ day).select("#" + quantizeT(time2)).append("svg").attr("class","svgs").attr("id","course"+data.Cno).attr("height",r).attr("width",r);
+				// drawCircle(data,temp).attr("stroke-dasharray","5 10");
+			}
+			function drawWeekends(data,day,time){
+				var r = quantileR(parseFloat(data.Ccredit));
+				var temp = d3.select("#day"+ day).select("#" + quantizeT(time)).append("svg").attr("class","svgs").attr("id","course"+data.Cno).attr("height",r).attr("width",r);
+				return drawCircle(data,temp);
+			}
+			function draw(dataset){
+				for(var i = 0 ; i<dataset.length;i++){
+					var day = parseInt(dataset[i].Cday);
+					if(day==7 || day==6){
+						//weekends
+						var time1 = (dataset[i].Ctime.length > 5) ? parseInt(dataset[i].Ctime.substr(3,2)):parseInt(dataset[i].Ctime.charAt(3));
+						var time2 = (dataset[i].Ctime_2.length > 5) ? parseInt(dataset[i].Ctime_2.substr(3,2)):parseInt(dataset[i].Ctime_2.charAt(3));
+						if(!isNaN(time2) && time1!=time2){
+							drawMulti(dataset[i],day,time1,time2);
+						}
+						else
+							drawWeekends(dataset[i],day,time1);
+					}
+					else{
+						//Weekdays
+						drawWeekdays(dataset[i],day);
+					}
+				}
+			}
+
+			draw({{CourseT}});
+
+			datamap = d3.map({{CourseI}},function(d){return d.Cno;});
+
+		</script>
+{% endblock %}

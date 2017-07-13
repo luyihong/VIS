@@ -1,0 +1,39 @@
+{% block doc -%}
+<!DOCTYPE html>
+<html {% block html_attribs %}lang="en"{% endblock html_attribs %}>
+{%- block html %}
+   <head>
+       {%- block head %}
+      <title>{% block title %}{% endblock title %}</title>
+
+       {%- block metas %}
+      <!-- 为了让 Bootstrap 开发的网站对移动设备友好，确保适当的绘制和触屏缩放 -->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       {%- endblock metas %}
+
+       {%- block styles %}
+      <!-- 引入 Bootstrap -->
+      <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+       {%- endblock styles %}
+       {%- endblock head %}
+   </head>
+    <body {% block body_attribs %}{% endblock body_attribs %}>
+        {% block body -%}
+
+            {% block navbar %}
+            {%- endblock navbar %}
+
+            {% block content -%}
+            {%- endblock content %}
+
+            {% block scripts %}
+                <script src="{{url_for('static',filename='js/d3.v3.min.js')}}"></script>
+                <script src="{{url_for('static',filename='js/jquery.js')}}"></script>
+                <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+            {%- endblock scripts %}
+
+        {%- endblock body %}
+    </body>
+{%- endblock html %}
+</html>
+{% endblock doc -%}

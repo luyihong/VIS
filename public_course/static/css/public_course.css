@@ -1,0 +1,135 @@
+    * {
+		font-family: "微软雅黑";
+		color: #a0a0a0;
+		margin: 0;
+	}
+	.body{
+		background-color: #272822 ;
+		margin: 40px 0px;
+	}
+	.classBox {
+		float: left;
+		position: relative;
+		height: auto;
+		width: 18%;
+		margin-right: 1%;
+		border: 1px solid #808080;
+		min-width:204px;
+	}
+	.dayBox {
+		position: relative;
+		height: auto;
+		top:-17px;
+		margin-bottom: 20px;
+		padding: 40px;
+		background-color: #444444;
+		min-width:265px;
+		border-top:2.5px solid #808080;
+	}
+	.left {
+		position:relative;
+		margin-left: 40px;
+		left: 0px;
+		top: 0px;
+		margin-right: 300px;
+	}
+	.right {
+		overflow: hidden;
+		position: fixed;
+		top: 102px;
+		z-index: 1;
+		right: 0;
+		bottom: 0;
+		padding: 40px 20px 0;
+		text-align: left;
+		width: 200px;
+		height: 100%;
+		margin: 0 40px 40px 0;
+		background-color: #444444;
+		border-top: 2.5px solid #808080;
+		border-left: 2.5px solid #272822;
+		overflow: scroll;
+	}
+	/*右上角颜色框：用于显示课序号和课程名字*/
+	.rightColorBox{
+		overflow: hidden;
+		position: fixed;
+		top: 0px;
+		z-index: 1;
+		right: 0;
+		bottom: 0;
+		padding: 40px 20px 0;
+		text-align: left;
+		width: 200px;
+		height: 100%;
+		margin: 0 40px 40px 0;
+		background-color: #272822;
+		/*border-top: 2.5px solid #808080;*/
+		border-left: 2.5px solid #272822;
+	}
+	.svgs{
+		position: relative;
+		width: 82px;
+		height: 82px;
+	}
+	.cno{
+		position: fixed;
+	    top: -9px;
+	    font-size: 40px;
+	    font-weight: 500;
+	}
+	.cname{
+		position: relative;
+    	top: -6px;
+    	font-size: 27px;
+    	font-weight: 500;
+    	color: #808080;
+	}
+	.cca{
+		position: fixed;
+    	top: 106px;
+    	/*margin-left: -5px;*/
+    	font-size: initial;
+    	font-weight: 400;
+	}
+	.hot{
+		-webkit-animation:change 2s infinite linear;
+	}
+	@-webkit-keyframes change
+	{
+
+	　　0%{-webkit-transform:rotate(0deg);}
+
+	　　50%{-webkit-transform:rotate(180deg);}
+
+	　　100%{-webkit-transform:rotate(360deg);}
+	}
+	h2{
+		font-weight: 400;
+    	font-size: initial;
+	}
+	h1{
+		font-weight: 400;
+    	font-size: 23px;
+    	color: #dcdcdc;
+	}
+	/*当CSS中出现伪元素样式时，Webkit引擎将会关闭它的缺省滚动条样式输出，只使用CSS里提供的样式信息。 – Surfin’ Safari*/
+	::-webkit-scrollbar {
+		  width: 15px;
+	} /* 这是针对缺省样式 (必须的) */
+
+	::-webkit-scrollbar-track {
+		background-color: #8C8686;
+	} /* 滚动条的滑轨背景颜色 */
+
+	::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.2);
+	} /* 滑块颜色 */
+
+	::-webkit-scrollbar-button {
+		background-color: #666060;
+	} /* 滑轨两头的监听按钮颜色 */
+
+	::-webkit-scrollbar-corner {
+		background-color: black;
+	} /* 横向滚动条和纵向滚动条相交处尖角的颜色 */

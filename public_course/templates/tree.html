@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>课程标签烟花图</title>
+<style>
+body{
+	background-color: #1C1C1C;
+	/*overflow: scroll;*/
+}
+.node {
+  cursor: pointer;
+  stroke: #F8C3CD;
+  stroke-width: 2px;
+}
+
+.link {
+  fill: none;
+  stroke:#7C7C7C;
+  stroke-width: 1.5px;
+}
+.text{
+  fill:#E4E4E4;
+  stroke:#E4E4E4;
+}
+
+.tooltip{   
+position: absolute;           
+text-align: center;   
+width: 60px;                  
+/*height: 50px; */
+line-height: 50px;              
+padding: 2px;             
+font: 15px sans-serif;        
+background: lightsteelblue;   
+border: 0px;      
+border-radius: 8px;           
+pointer-events: none;         
+}
+#Back {
+    display: none;
+    text-decoration: none;
+    position: fixed;
+    top: 10px;
+    left: 3%;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border: none;
+    text-indent: 100%;
+    background: url(arrow_back.png) no-repeat 50% 44% rgba(141,146,149,1.00);
+    border-radius: 30em;
+    z-index: 10
+}
+</style>
+<body>
+<a href="index.html" id="Back" style="display: block;"></a>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+
+var width = window.innerWidth
+|| document.documentElement.clientWidth
+|| document.body.clientWidth;
+
+var height = window.innerHeight
+|| document.documentElement.clientHeight
+|| document.body.clientHeight;
+
+var root;
+
+var force = d3.layout.force()
+    .size([width, height])
+    .on("tick", tick);
+
+var drag = force.drag()
+  .on("dragstart",function(d){
+      d.fixed=true;
+  });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var link = svg.selectAll(".link"),
+    node = svg.selectAll(".node");
+
+
+d3.json("courseJson.json", function(error, json) {
+  if (error) throw error;
+  root = json;
+  update();
+});
+
+function update() {
+  var nodes = flatten(root),
+      links = d3.layout.tree().links(nodes);
+
+  var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip");
+
+  // Restart the force layout.
+  force
+      .nodes(nodes)
+      .links(links)
+      .start();
+  console.log(nodes);
+
+  // Update the links…
+  link = link.data(links, function(d) { return d.target.id; });
+
+  // Exit any old links.
+  link.exit().remove();
+
+  // Enter any new links.
+  link.enter().insert("line", ".node")
+      .attr("class", "link")
+      .attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  // Update the nodes…
+  node = node.data(nodes, function(d) {return d.id;}).style("fill", color);
+
+  // Exit any old nodes.
+  node.exit().remove();
+
+  // Enter any new nodes.
+  node.enter().append("g")
+      .attr("class", "node")
+      .on("click", click)
+      .call(drag);
+
+    node.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", function(d) { return d.type=="tag"?3:(d.credit*6 || 4.5) ; })
+      .style("fill", color)
+      .on("mouseover", function(d) {    
+      		console.log(tooltip);
+            tooltip.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            tooltip.html(d.name) 
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");    
+            })   
+         .on("mousemove",function(d){
+		    tooltip.style("left", (d3.event.pageX) + "px")
+		            .style("top", (d3.event.pageY - 28) + "px");
+		})               
+        .on("mouseout", function(d) {       
+            tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        });
+
+    node.append("text")
+      .attr("class", "text")
+      .attr("dx", 12)
+      .attr("dy", ".35em")
+      .attr("font-size",function(d){return d.type=="tag"?10:d.type=="course"?15:30})
+      .text(function(d) { if(!d.type ) {return d.name ;} });
+    	
+}
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+}
+
+function color(d) {
+  return d._children ? "#DFAF20" : d.children ? "#DC9FB4": "#E87A90";
+}
+
+// Toggle children on click.
+function click(d) {
+  if (!d3.event.defaultPrevented) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else {
+      d.children = d._children;
+      d._children = null;
+    }
+    update();
+  }
+}
+
+// Returns a list of all nodes under the root.
+function flatten(root) {
+  var nodes = [], i = 0;
+
+  function recurse(node) {
+    if (node.children) node.children.forEach(recurse);
+    if (!node.id) node.id = ++i;
+    nodes.push(node);
+  }
+
+  recurse(root);
+  return nodes;
+}
+
+</script>

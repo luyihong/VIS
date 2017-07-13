@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}搜索页面{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1> {% if result %}查询结果：{{ result }}{% else %}没有查到{% endif %}!</h1>
+    {% if not known %}
+    <p>没有这门课哦</p>
+    {% else %}
+    <p>查到啦}</p>
+    {% endif %}
+</div>
+{{ wtf.quick_form(form) }}
+{% endblock %}

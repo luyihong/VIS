@@ -1,0 +1,104 @@
+body{  
+        width:100%; 
+        height:100%; 
+        background-color: dimgray;
+        text-align: center;
+        position: absolute;
+        margin: 0;
+	} 
+    h1{
+        color: azure;
+        font-family: "微软雅黑";
+        font-size: 60px;
+        margin: auto;
+        font-weight: 300;
+    }
+    h2{
+        color: aquamarine;
+        font-family: "微软雅黑";
+        font-size: 35px;
+        margin: auto;
+        font-weight: 300;
+    }
+    p{
+        color: darkgray;
+        margin: auto; 
+        font-family: "微软雅黑";
+        font-size: 15px;
+    }
+    span{
+        font-weight: 600;
+    }
+    .titlebox{
+        margin: 60px auto;
+        width: 355px;
+        height: 80px;
+    }
+    .title{
+        float: left;
+        margin: auto;
+    }
+    .content{
+        /*width:70%; */
+        width: 1110px;
+        height:100%; 
+        padding: 0;
+        margin: 0;
+        min-width: 500px;
+        margin: 20px auto;
+    }
+    .detail-section{
+        min-width: inherit;
+        min-height: 400px;
+        background: #949494;
+        margin-bottom: 126px;
+        border-radius: 60px;
+        border-style: solid;
+        border-top-color: gainsboro;
+        border-right-color: darkslategray;
+        border-bottom-color: aliceblue;
+        border-left-color: darkgray;
+        padding-bottom: 30px;
+    }
+    .graph{
+        min-width: inherit;
+        min-height: 400px;
+        width:inherit;
+    }
+    .description{
+        color: #444444;
+        font-family: "微软雅黑";
+        font-size: 15px;
+        width:60%;
+        margin:0 auto;
+    }
+    /*烟花图CSS*/
+    .node {
+  cursor: pointer;
+  stroke: #F8C3CD;
+  stroke-width: 2px;
+}
+
+.link {
+  fill: none;
+  stroke:#7C7C7C;
+  stroke-width: 1.5px;
+}
+.text{
+  fill:#E4E4E4;
+  stroke:#E4E4E4;
+}
+
+.tooltip{   
+position: absolute;           
+text-align: center;   
+width: 60px;                  
+/*height: 50px; */
+line-height: 50px;              
+padding: 2px;             
+font: 15px sans-serif;        
+background: lightsteelblue;   
+border: 0px;      
+border-radius: 8px;           
+pointer-events: none;         
+}

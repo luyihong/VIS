@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}公选课信息{% endblock %}
+
+{% block styles %}
+<link href="static/css/viz.css" rel="stylesheet" type="text/css" />
+{% endblock%}
+
+
+{% block content %}
+<div class="titlebox">
+    <div class="title"><h1>数据绘</h1></div>
+    <div class="title"><h2>图说公选课</h2><p>黄弋珂&amp;卢钇宏 2017-5-7</p></div>
+    <div style="clear:both"></div>
+</div>
+  <div class="content">
+    <div class="detail-section" id="section1">
+      <div class="graph" id="svg1"></div>
+      <div class="description">
+          <h2>学校的开课偏好？</h2>
+          <span>公选课类别分布雷达图 </span>来源：校网数据，自建数据库<br>不同的学校有不同的特色与专长。这一点从学校提供的公选课中可见一斑。从雷达图的偏心程度看——中传不愧是中传，“艺术类”与“人文社会科学类”课程开课数目并列榜首。
+      </div>
+    </div>
+    <div class="detail-section" id="section2">
+      <div class="graph" id="svg2"></div>
+      <div class="description">
+          <h2>学生们都去了哪？</h2>
+          <span>公选课课容量比重饼图 </span>来源：校网数据，自建数据库<br>就算知道了哪类课程开得多，也不敢确定学生们具体去向如何，毕竟课容量有大有小。不考虑课程停开、未满的情况，仅根据计划课容量安排，求和各类别课程的课容量，可大致了解各类别课程课容量在总课容量的比重，从而了解到学生们的去向。由此图可知，各类别课程课容量比重大小顺序几乎等同开课数目的比重顺序。从看到各类别开课数目起，大多数学生可能流向哪里，几乎已经确定了。
+      </div>
+    </div>
+    <div class="detail-section" id="section3">
+      <div class="graph" id="svg3"></div>
+      <div class="description">
+          <h2>你喜欢什么样的教学环境？</h2>
+          <span>公选课总课时&amp;课容量折线柱状图 </span>来源：校网数据，自建数据库<br>等等！我怎么知道教学环境怎样？其实，看看课容量和总学时大概能猜一猜。这张图大概可以看出某类课程的“典型课堂环境”如何。是人头攒动的教室里的远程围观？还是支持三五成群地和老师充分互动？是慢节奏的放松氛围，还是速战速决的头脑风暴？至少，从上图中，可以感受到艺术类和外语类是完全不同的上课模式。
+      </div>
+    </div>
+    <div class="detail-section" id="section4">
+      <div class="graph" id="svg4"></div>
+      <div class="description">
+          <h2>拿分“效率”如何？</h2>
+          <span>公选课“效率比”柱状图 </span>来源：校网数据，自建数据库<br>追求“效率”并没有错，总有人比较看重公选课拿学分的“效率”。这里定义的课程“效率比”：课程总学分与总课时比值；图中是按类显示的课程“效率比”均值。可见经管类课程以微弱优势拥有着最佳拿分效率——同时，健康体育类的拿分效率低到让人怀疑算错了……（但还真没算错！）
+      </div>
+    </div>
+    <div class="detail-section" id="section5">
+      <div class="graph" id="svg5"></div>
+      <div class="description">
+          <h2>课上都讲些什么？</h2>
+          <span>公选课标签词云图</span>来源：校网数据，自建数据库<br>选取公选课介绍中的关键词作为其标签，再用热门标签定制了CUC公选课的词云图。标签出现次数越多，则标签的字体越大。不难看出，“影视”、“中国”、“艺术”、“社会”、“历史”、“美学”、“音乐”、“媒介”、“媒体”、“软件”是CUC公选课中热门话题，而“基本知识”、“概论”、“素养”、“案例”、“作品”、“方法”则体现了老师们授课的方式和目标，毕竟公选课的目的就是让我们比较轻松地掌握基础知识，开拓视野嘛~
+      </div>
+    </div>
+    <div class="detail-section" id="section6">
+      <div class="graph" id="svg6"></div>
+      <div class="description">
+          <h2>不同学院的学生都爱选什么类型的课？</h2>
+          <span>不同学院学生选课流向图</span>来源：无奈公选课数据不适合做弦图，只能使用假数据。<br>
+          模拟的是来自不同学部/学院的学生选择来自不同学部/学院的老师的课程的情况。<br>各学院学生总人数由2015级本科生宿舍分配情况（来自传媒团英公众号推送）求和得出，具体学生流向由随机算法生成。
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
+
+  {% block scripts%}
+    <script src="static/scripts/acharts.js"></script>
+    <script src="static/scripts/d3.v3.min.js"></script>
+    <script src="static/scripts/js2wordcloud.js"></script>
+    <script src="static/scripts/our_graphs.js?567890"></script>
+    <script type="text/javascript">
+
+    <!--数据接力处理-->
+    var courseType = ['A艺术','H人文社科','E经管','S科技','J新闻传播','P健康体育','L外语'];
+    var courseSum = {{courseSum}}//该分类下课程总数
+    var capacitySum = {{capacitySum}};//该分类下课容量求和
+    var hoursSum = {{hoursSum}};//该分类下总课时求和
+    var rateSum = {{rateSum}};//该分类下每门课程总学分与总课时比值求和，所谓“效率比”之和
+
+    var averRate=[];//“效率比”均值
+    var averCapacity=[];//课容量均值
+    var averHours=[];//课时均值
+    for(var i=0; i<7;i++){
+        averRate[i]=rateSum[i]/courseSum[i];
+        averCapacity[i]=capacitySum[i]/courseSum[i];
+        averHours[i]=hoursSum[i]/courseSum[i];
+    }
+    // console.log(courseSum,capacitySum,hoursSum,rateSum);
+
+    <!--画图-->
+    radarChart(courseSum,document.getElementById('svg1'),{
+        x:courseType,
+        xname:"公选课门数"}).render();
+    pieChart(capacitySum,document.getElementById('svg2'),{
+        title:"课程比重环饼图",
+        x:courseType}).render();
+    barLineCharMultiY([averCapacity,averHours],document.getElementById('svg3'),{
+        x:courseType,
+        unit1: '人',
+        unit2: '小时',
+        yname1: '平均课容量',
+        yname2:'平均课时'}).render();
+    barChart(averRate,document.getElementById('svg4'),{
+            title:"“效率比”柱状图",
+            subtitle:"所谓“效率比”：该分类下课程总学分与总课时比值均值",
+            x:courseType,
+            xname: '比值'}).render(); 
+
+    // fireworkChart(); 
+    wordcloudCUC(document.getElementById('svg5'),picurl="{{url_for('static',filename='src/CUC1.png')}}");
+    chordBar(document.getElementById('svg6'));//里面有个硬编码d3.select("#svg6")
+
+    </script>
+ {% endblock %}
+
+
